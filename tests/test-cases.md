@@ -40,8 +40,14 @@ Module key: **M1** = Assignment Management, **M2** = Task Tracking and Dashboard
 | TC-16 | M2 | Deadline boundary values | Deadline = today (2026-10-15), tomorrow (2026-10-16), past (2026-10-12), all not Completed | Today: not overdue; tomorrow: not overdue; past: overdue | Today: no badge; tomorrow: no badge; past: Overdue badge | Pass |
 | TC-17 | M1 | Deadline year longer than 4 digits | Type 12 / 20 / 20255 into the date box | Validation error; assignment not saved | **1st run:** saved as "20255-12-20" and shown as Overdue (bug TM-27). **Retest after fix:** "Please enter a valid deadline (the year must have 4 digits)." shown; nothing saved; Overdue = 0 | Fail → Pass (retest) |
 | TC-18 | M1 | Maximum-length title with no spaces | Title = 100 × "A", Subject "Engineering Chemistry", Deadline 2026-11-01 | Title wraps; table stays inside the panel | **1st run:** table 1808 px wide on a 1280 px window, horizontal scrollbar (bug TM-28). **Retest after fix:** table right edge 1100 px ≤ panel 1120 px; no horizontal scroll | Fail → Pass (retest) |
+| TC-19 | M1 | Assignment list on a phone-width screen (Sprint 2) | Screen 390 × 844; 3 assignments added | Page stays 390 px wide; table scrolls inside its panel; all columns reachable | **1st run:** page became 605 px wide; Status and Actions columns cut off; titles broken into tiny pieces (bug TM-38). **Retest after fix:** page 390 px; table scrolls inside the panel; Status, Edit and Delete reachable by scrolling | Fail → Pass (retest) |
+| TC-20 | M1 | Success message after other actions (Sprint 2) | Add an assignment, then change a status and the filter | Old “Assignment added successfully.” message disappears | **1st run:** message still shown (bug TM-39). **Retest after fix:** message removed | Fail → Pass (retest) |
+| TC-21 | M2 | Overdue status when the page stays open past midnight (Sprint 2) | Browser clock 2026-10-15 23:59; add assignment due 2026-10-15; wait until 00:01 without reloading | Assignment becomes Overdue; Overdue card = 1 | **1st run:** Overdue card stayed 0 until reload (bug TM-40). **Retest after fix:** Overdue card = 1 and footer shows 2026-10-16 without reload | Fail → Pass (retest) |
 
-**Summary:** 18 test cases executed. 16 passed on the first run. 2 failed on the first run (TC-17, TC-18), were logged as Jira bugs TM-27 and TM-28, fixed, and passed on retest. After the fixes, TC-01 to TC-16 were run again as a regression check and all passed.
+**Summary:** 21 test cases executed in two rounds.
+- Sprint 1: TC-01 to TC-18. 16 passed on the first run; TC-17 and TC-18 failed, were logged as bugs TM-27 and TM-28, fixed and passed on retest.
+- Sprint 2 (second test round): TC-19 to TC-21 all failed on the first run, were logged as bugs TM-38, TM-39 and TM-40, fixed and passed on retest.
+- After each round of fixes, TC-01 to TC-18 and the 14 unit tests were run again as a regression check and all passed.
 
 ## Unit tests (automated, `npm test`)
 
@@ -68,7 +74,7 @@ First run (before bug TM-27 was found): 13/13 passed. Final run: 14/14 passed. T
 
 - **Functional testing:** TC-01, TC-05 to TC-07, TC-09 to TC-13
 - **Unit testing:** UT-01 to UT-14
-- **Integration testing:** TC-08, TC-14 and TC-15 check that the form, the saved data, the status dropdown, the filter and the cards work together
-- **Boundary value analysis:** TC-16 (today, tomorrow and a past date), TC-17 (year length), TC-18 (maximum title length), UT-06 to UT-10
+- **Integration testing:** TC-08, TC-14, TC-15 and TC-21 check that the form, the saved data, the status dropdown, the filter and the cards work together
+- **Boundary value analysis:** TC-16 (today, tomorrow and a past date), TC-17 (year length), TC-18 (maximum title length), TC-19 (small screen width), TC-21 (date change at midnight), UT-06 to UT-10
 - **Equivalence partitioning:** valid details (TC-01) versus invalid classes: missing title (TC-02), missing subject (TC-03), missing deadline (TC-04) and malformed deadline (TC-17)
 - **Validation testing:** TC-02 to TC-04, TC-17, UT-01 to UT-05 and UT-14
