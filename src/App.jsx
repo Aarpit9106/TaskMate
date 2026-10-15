@@ -20,15 +20,22 @@ function App() {
   const [editingId, setEditingId] = useState(null)
   const [message, setMessage] = useState('')
 
-  // Module 2 state: the selected status filter
+  // Module 2 state: the selected status filter and today's date
   const [filter, setFilter] = useState('All')
+  const [today, setToday] = useState(getToday())
 
   // Save to LocalStorage every time the list changes
   useEffect(() => {
     saveAssignments(assignments)
   }, [assignments])
 
-  const today = getToday()
+  // Bug fix TM-40: check the date every minute so overdue status
+  // updates after midnight even if the page stays open
+  useEffect(() => {
+    const timer = setInterval(() => setToday(getToday()), 60 * 1000)
+    return () => clearInterval(timer)
+  }, [])
+
   const counts = getCounts(assignments, today)
   const visibleAssignments = filterByStatus(assignments, filter)
     .slice()
@@ -39,6 +46,7 @@ function App() {
   function handleChange(event) {
     const { name, value } = event.target
     setForm({ ...form, [name]: value })
+    setMessage('') // bug fix TM-39: hide the old success message
   }
 
   function handleSubmit(event) {
@@ -101,6 +109,12 @@ function App() {
 
   function handleStatusChange(id, newStatus) {
     setAssignments(assignments.map((a) => (a.id === id ? { ...a, status: newStatus } : a)))
+    setMessage('') // bug fix TM-39
+  }
+
+  function handleFilterChange(event) {
+    setFilter(event.target.value)
+    setMessage('') // bug fix TM-39
   }
 
   return (
@@ -182,7 +196,7 @@ function App() {
           <h2>My Assignments</h2>
           <label className="filter">
             Filter by status:{' '}
-            <select value={filter} onChange={(e) => setFilter(e.target.value)} aria-label="Filter by status">
+            <select value={filter} onChange={handleFilterChange} aria-label="Filter by status">
               <option value="All">All</option>
               {STATUSES.map((s) => (
                 <option key={s} value={s}>{s}</option>
@@ -198,6 +212,8 @@ function App() {
               : 'No assignments match the selected filter.'}
           </p>
         ) : (
+          // Bug fix TM-38: the wrapper lets the table scroll on small screens
+          <div className="table-wrap">
           <table>
             <thead>
               <tr>
@@ -239,6 +255,7 @@ function App() {
               })}
             </tbody>
           </table>
+          </div>
         )}
       </section>
 

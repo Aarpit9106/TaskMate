@@ -156,6 +156,11 @@ td {
 /* Bug fix TM-28: wrap very long words in the title so the table stays inside the panel */
 .title-cell {
   overflow-wrap: anywhere;
+  min-width: 140px; /* bug fix TM-38: stop titles breaking into tiny pieces */
+}
+/* Bug fix TM-38: on small screens the table scrolls inside its panel */
+.table-wrap {
+  overflow-x: auto;
 }
 .deadline-cell {
   white-space: nowrap;
